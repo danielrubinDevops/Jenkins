@@ -1,47 +1,36 @@
 pipeline {
-    agent any  // יכול לרוץ על כל סוכן פנוי
+    agent any  // Can run on any available agent
     
     environment {
-        PYTHON_ENV = 'python3'  // גרסה/נתיב לפייתון
+        PYTHON_ENV = 'python3'  // Version/path to Python
     }
 
-stages {
-    stage('Install Python') {
-        steps {
-            script {
-                echo 'Checking if Python is installed...'
-                sh 'sudo apt update -y'  // Ensure package list is up-to-date
-                sh 'sudo apt install python3 -y'  // Install Python without prompt
-                echo 'Python is already installed.'
+    stages {
+        stage('Install Python') {
+            steps {
+                script {
+                    echo 'Checking if Python is installed...'
+                    sh 'sudo apt update -y'  // Ensure package list is up-to-date
+                    sh 'sudo apt install python3 -y'  // Install Python without prompt
+                    echo 'Python is already installed.'
+                }
             }
         }
-    }
 
-stage('Install pip') {
-    steps {
-        script {
-            echo 'Installing pip...'
-            sh 'sudo apt install python3-pip -y'  // Install pip without prompt
+        stage('Install pip') {
+            steps {
+                script {
+                    echo 'Installing pip...'
+                    sh 'sudo apt install python3-pip -y'  // Install pip without prompt
+                }
+            }
         }
-    }
-}
-
-stage('Install dependencies') {
-    steps {
-        script {
-            echo 'Installing dependencies...'
-            sh 'pip install -r requirements.txt'  // Install Python dependencies from a requirements file
-        }
-    }
-}
-
 
         stage('Install dependencies') {
             steps {
                 script {
-                    // התקנת ספריות Python באמצעות pip
-                    echo 'Installing Python dependencies...'
-                    sh "${env.PYTHON_ENV} -m pip install -r requirements.txt"
+                    echo 'Installing dependencies...'
+                    sh "${env.PYTHON_ENV} -m pip install -r requirements.txt"  // Install Python dependencies from a requirements file
                 }
             }
         }
@@ -49,10 +38,10 @@ stage('Install dependencies') {
         stage('Run tests') {
             steps {
                 script {
-                    // הרצת קובץ הבדיקות (הפעלת unittest או כל ספריית בדיקות אחרת)
+                    // Run tests (e.g., using unittest or other testing libraries)
                     echo 'Running tests...'
                     def result = sh(script: "python -m unittest discover -s tests", returnStatus: true)
-                    // אם הבדיקות לא הצליחו (status != 0), הפייפליין ייכשל
+                    // If tests fail (status != 0), the pipeline will stop
                     if (result != 0) {
                         error("Tests failed, stopping pipeline.")
                     }
@@ -62,25 +51,25 @@ stage('Install dependencies') {
 
         stage('Deploy') {
             when {
-                // הבדיקות עברו בהצלחה, אז נבצע את שלב הפריסה
-                branch 'main'  // בדוק אם אנחנו בבראנץ' "main"
+                // Only run deployment if we're on the 'main' branch
+                branch 'main'
             }
             steps {
                 script {
-                    // פעולת פריסה (נניח העתקה לשרת או הפעלת פרויקט כלשהו)
+                    // Deployment action (e.g., copy to a server or trigger some project)
                     echo 'Deploying application...'
-                    // כאן תוכל להוסיף את הקוד שיבצע את הפריסה
+                    // Add your deployment script here
                 }
             }
         }
     }
 
     post {
-        // אם כל הבדיקות עברו בהצלחה, נשלח הודעה
+        // If all tests passed successfully, send a success message
         success {
             echo 'Pipeline finished successfully!'
         }
-        // אם הפייפליין נכשל, נשלח הודעה
+        // If the pipeline failed, send a failure message
         failure {
             echo 'Pipeline failed.'
         }
