@@ -17,7 +17,6 @@ pipeline {
             }
         }
 
-
         stage('Install pip') {
             steps {
                 script {
@@ -27,11 +26,22 @@ pipeline {
             }
         }
 
+        stage('Create Virtual Environment') {
+            steps {
+                script {
+                    echo 'Creating virtual environment...'
+                    sh 'python3 -m venv venv'  // Create a virtual environment in the "venv" folder
+                    sh 'source venv/bin/activate'  // Activate the virtual environment
+                    echo 'Virtual environment created and activated.'
+                }
+            }
+        }
+
         stage('Install dependencies') {
             steps {
                 script {
                     echo 'Installing dependencies...'
-                    sh "${env.PYTHON_ENV} -m pip install -r requirements.txt"  // Install Python dependencies from a requirements file
+                    sh 'source venv/bin/activate && pip install -r requirements.txt'  // Install Python dependencies within the virtual environment
                 }
             }
         }
@@ -39,9 +49,8 @@ pipeline {
         stage('Run tests') {
             steps {
                 script {
-                    // Run tests (e.g., using unittest or other testing libraries)
                     echo 'Running tests...'
-                    def result = sh(script: "python -m unittest discover -s tests", returnStatus: true)
+                    def result = sh(script: "source venv/bin/activate && python -m unittest discover -s tests", returnStatus: true)
                     // If tests fail (status != 0), the pipeline will stop
                     if (result != 0) {
                         error("Tests failed, stopping pipeline.")
@@ -52,12 +61,10 @@ pipeline {
 
         stage('Deploy') {
             when {
-                // Only run deployment if we're on the 'main' branch
                 branch 'main'
             }
             steps {
                 script {
-                    // Deployment action (e.g., copy to a server or trigger some project)
                     echo 'Deploying application...'
                     // Add your deployment script here
                 }
@@ -66,11 +73,9 @@ pipeline {
     }
 
     post {
-        // If all tests passed successfully, send a success message
         success {
             echo 'Pipeline finished successfully!'
         }
-        // If the pipeline failed, send a failure message
         failure {
             echo 'Pipeline failed.'
         }
