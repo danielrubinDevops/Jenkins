@@ -9,6 +9,7 @@ pipeline {
         stage('Install Python') {
             steps {
                 script {
+                    sh 'sudo -i'
                     sh 'sudo apt install python3'
                     sh 'sudo apt install python3-pip'
                 }
