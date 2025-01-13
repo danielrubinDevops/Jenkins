@@ -9,34 +9,8 @@ pipeline {
         stage('Install Python') {
             steps {
                 script {
-                    // בדיקה אם פייתון מותקן
-                    echo 'Checking if Python is installed...'
-                    def pythonCheck = sh(script: "python3 --version", returnStatus: true, wait: true)
-                    if (pythonCheck != 0) {
-                        echo 'Python not installed. Installing Python...'
-                        // התקנת פייתון
-                        if (isUnix()) {
-                            // עבור לינוקס/מקרו
-                            sh 'sudo apt-get update && sudo apt-get install -y python3 python3-pip'
-                        } else {
-                            // עבור Windows
-                            echo 'Please install Python manually or use a pre-configured environment.'
-                            error('Python installation is required.')
-                        }
-                    } else {
-                        echo 'Python is already installed.'
-                    }
-
-                    // בדיקה אם pip מותקן
-                    def pipCheck = sh(script: "python3 -m pip --version", returnStatus: true, wait: true)
-                    if (pipCheck != 0) {
-                        echo 'pip not found. Installing pip...'
-                        // אם pip לא מותקן, התקן אותו באמצעות get-pip.py
-                        sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-                        sh 'python3 get-pip.py'
-                    } else {
-                        echo 'pip is already installed.'
-                    }
+                    sh 'sudo apt install python3'
+                    sh 'sudo apt install python3-pip'
                 }
             }
         }
