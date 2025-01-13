@@ -27,11 +27,13 @@ pipeline {
                         echo 'Python is already installed.'
                     }
 
-                    // התקנת pip אם הוא לא נמצא
+                    // בדיקה אם pip מותקן
                     def pipCheck = sh(script: "python3 -m pip --version", returnStatus: true, wait: true)
                     if (pipCheck != 0) {
                         echo 'pip not found. Installing pip...'
-                        sh 'python3 -m ensurepip --upgrade'
+                        // אם pip לא מותקן, התקן אותו באמצעות get-pip.py
+                        sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
+                        sh 'python3 get-pip.py'
                     } else {
                         echo 'pip is already installed.'
                     }
