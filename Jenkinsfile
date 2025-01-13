@@ -40,7 +40,7 @@ pipeline {
                 script {
                     echo 'Creating virtual environment...'
                     sh 'python3 -m venv venv'  // Create a virtual environment in the "venv" folder
-                    sh 'source venv/bin/activate'  // Activate the virtual environment
+                    sh '. venv/bin/activate'  // Activate the virtual environment (dot instead of source)
                     echo 'Virtual environment created and activated.'
                 }
             }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     echo 'Installing dependencies...'
-                    sh 'source venv/bin/activate && pip install -r requirements.txt'  // Install Python dependencies within the virtual environment
+                    sh '. venv/bin/activate && pip install -r requirements.txt'  // Install Python dependencies within the virtual environment
                 }
             }
         }
@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests...'
-                    def result = sh(script: "source venv/bin/activate && python -m unittest discover -s tests", returnStatus: true)
+                    def result = sh(script: ". venv/bin/activate && python -m unittest discover -s tests", returnStatus: true)
                     // If tests fail (status != 0), the pipeline will stop
                     if (result != 0) {
                         error("Tests failed, stopping pipeline.")
