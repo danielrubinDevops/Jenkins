@@ -2,11 +2,34 @@ pipeline {
     agent any  // יכול לרוץ על כל סוכן פנוי
 
     environment {
-        // הגדרות סביבות עבודה (למשל, אם יש צורך בהגדרת PATH למיקום pip)
-        PYTHON_ENV = 'python3'  // אפשר להגדיר את הגרסה או את המיקום של Python
+        PYTHON_ENV = 'python3'  // גרסה/נתיב לפייתון
     }
 
     stages {
+        stage('Install Python') {
+            steps {
+                script {
+                    // בדיקה אם פייתון מותקן
+                    echo 'Checking if Python is installed...'
+                    def pythonCheck = sh(script: "python3 --version", returnStatus: true, wait: true)
+                    if (pythonCheck != 0) {
+                        echo 'Python not installed. Installing Python...'
+                        // התקנת פייתון
+                        if (isUnix()) {
+                            // עבור לינוקס/מקרו
+                            sh 'sudo apt-get update && sudo apt-get install -y python3 python3-pip'
+                        } else {
+                            // עבור Windows
+                            echo 'Please install Python manually or use a pre-configured environment.'
+                            error('Python installation is required.')
+                        }
+                    } else {
+                        echo 'Python is already installed.'
+                    }
+                }
+            }
+        }
+
         stage('Install dependencies') {
             steps {
                 script {
