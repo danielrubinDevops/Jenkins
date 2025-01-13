@@ -19,6 +19,7 @@ pipeline {
             steps {
                 echo 'Deploying the application...'
                 // Example of deployment command
+                // Example of deployment command
                 sh 'echo Deploying...'
             }
         }
