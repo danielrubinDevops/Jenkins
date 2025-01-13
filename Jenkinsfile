@@ -10,12 +10,13 @@ pipeline {
             steps {
                 script {
                     echo 'Checking if Python is installed...'
-                    sh 'sudo apt update -y'  // Ensure package list is up-to-date
-                    sh 'sudo apt install python3 -y'  // Install Python without prompt
+                    sh 'for i in {1..5}; do sudo apt update -y && break || sleep 15; done'  // Retry 5 times with a 15-second delay
+                    sh 'sudo apt install python3 -y'
                     echo 'Python is already installed.'
                 }
             }
         }
+
 
         stage('Install pip') {
             steps {
