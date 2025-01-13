@@ -26,6 +26,15 @@ pipeline {
                     } else {
                         echo 'Python is already installed.'
                     }
+
+                    // התקנת pip אם הוא לא נמצא
+                    def pipCheck = sh(script: "python3 -m pip --version", returnStatus: true, wait: true)
+                    if (pipCheck != 0) {
+                        echo 'pip not found. Installing pip...'
+                        sh 'python3 -m ensurepip --upgrade'
+                    } else {
+                        echo 'pip is already installed.'
+                    }
                 }
             }
         }
