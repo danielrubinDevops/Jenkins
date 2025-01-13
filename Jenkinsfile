@@ -1,20 +1,40 @@
 pipeline {
     agent any  // יכול לרוץ על כל סוכן פנוי
-
+    
     environment {
         PYTHON_ENV = 'python3'  // גרסה/נתיב לפייתון
     }
 
-    stages {
-        stage('Install Python') {
-            steps {
-                script {
-                    sh 'sudo -i'
-                    sh 'sudo apt install python3'
-                    sh 'sudo apt install python3-pip'
-                }
+stages {
+    stage('Install Python') {
+        steps {
+            script {
+                echo 'Checking if Python is installed...'
+                sh 'sudo apt update -y'  // Ensure package list is up-to-date
+                sh 'sudo apt install python3 -y'  // Install Python without prompt
+                echo 'Python is already installed.'
             }
         }
+    }
+
+stage('Install pip') {
+    steps {
+        script {
+            echo 'Installing pip...'
+            sh 'sudo apt install python3-pip -y'  // Install pip without prompt
+        }
+    }
+}
+
+stage('Install dependencies') {
+    steps {
+        script {
+            echo 'Installing dependencies...'
+            sh 'pip install -r requirements.txt'  // Install Python dependencies from a requirements file
+        }
+    }
+}
+
 
         stage('Install dependencies') {
             steps {
