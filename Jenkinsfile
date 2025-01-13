@@ -26,6 +26,15 @@ pipeline {
             }
         }
 
+        stage('Install python3-venv') {
+            steps {
+                script {
+                    echo 'Installing python3-venv package...'
+                    sh 'sudo apt install python3-venv -y'  // Install the python3-venv package
+                }
+            }
+        }
+
         stage('Create Virtual Environment') {
             steps {
                 script {
